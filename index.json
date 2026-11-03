@@ -127,6 +127,45 @@
           "engines": {}
         }
       ]
+    },
+    {
+      "name": "@everywhere-harness/client-ui-chat",
+      "title": {
+        "en": "Everywhere chat identity",
+        "pt": "Identidade Everywhere do chat"
+      },
+      "description": {
+        "en": "Everywhere Harness visual identity for the chat and sidebar: brand, wordmark, animated hero, and running indicator.",
+        "pt": "Identidade visual Everywhere do chat e da sidebar: marca, wordmark, hero animado e indicador de execução."
+      },
+      "author": "Everson Junior",
+      "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness#readme",
+      "repository": {
+        "url": "https://github.com/everson-junior/everywhere-makertplace-harness",
+        "directory": "packages/client-ui-chat"
+      },
+      "metadata": {
+        "category": "plugins",
+        "keywords": [
+          "ui",
+          "chat",
+          "sidebar",
+          "brand",
+          "everywhere-harness"
+        ],
+        "labels": [],
+        "sortKeys": {}
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1793377458,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {}
+        }
+      ]
     }
   ]
 }
