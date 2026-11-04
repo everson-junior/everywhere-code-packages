@@ -93,12 +93,12 @@
     {
       "name": "@everywhere-harness/plugin-providers",
       "title": {
-        "en": "Omniroute Provider",
-        "pt": "Provider Omniroute"
+        "en": "Antigravity Provider",
+        "pt": "Provider Antigravity"
       },
       "description": {
-        "en": "Adds the Omniroute OpenAI-compatible provider at http://localhost:2028/v1 with editable model discovery.",
-        "pt": "Adiciona o provider Omniroute compatível com OpenAI em http://localhost:2028/v1, com descoberta de modelos."
+        "en": "Google OAuth integration for Antigravity with Cloud Code models, streaming, tools, and image input.",
+        "pt": "Integração Google OAuth para Antigravity com modelos Cloud Code, streaming, ferramentas e imagens."
       },
       "author": "Everson Junior",
       "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness#readme",
@@ -109,8 +109,10 @@
       "metadata": {
         "category": "plugins",
         "keywords": [
-          "openai-compatible",
-          "local-llm",
+          "antigravity",
+          "google-oauth",
+          "cloud-code",
+          "multimodal",
           "provider",
           "everywhere-harness"
         ],
@@ -119,12 +121,14 @@
       },
       "versions": [
         {
-          "version": "1.0.0",
-          "publishTimestamp": 1793137045,
+          "version": "1.1.0",
+          "publishTimestamp": 1793821200,
           "source": {
             "type": "npm"
           },
-          "engines": {}
+          "engines": {
+            "dsh": ">=0.2.1-rc.5"
+          }
         }
       ]
     },

@@ -28,8 +28,42 @@ jobs:
         run: pnpm --filter @everywhere-harness/client-ui-chat run build
       - name: Test client UI chat
         run: pnpm --filter @everywhere-harness/client-ui-chat run test
+      - name: Validate Antigravity provider sources
+        run: |
+          node --check packages/plugin-providers/index.js
+          node --check packages/plugin-providers/client.js
+          node --check packages/plugin-providers/antigravity-proxy.js
+          node --check packages/plugin-providers/login.js
+      - name: Validate Antigravity bundle YAML
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs'
+          import { parseDocument } from 'yaml'
+          const document = parseDocument(readFileSync('packages/plugin-providers/cordis.patch.yml', 'utf8'), { prettyErrors: true, uniqueKeys: true })
+          if (document.errors.length) throw new Error(document.errors.map((error) => error.message).join('\n'))
+          const value = document.toJS()
+          if (!Array.isArray(value) || value.length !== 1 || !Array.isArray(value[0].insert) || value[0].insert.length !== 2) {
+            throw new Error('Unexpected Antigravity bundle patch shape')
+          }
+          NODE
+      - name: Validate OAuth materialization with dummy values
+        env:
+          ANTIGRAVITY_OAUTH_CLIENT_ID: test-client.apps.googleusercontent.com
+          ANTIGRAVITY_OAUTH_CLIENT_SECRET: test-client-secret
+        run: |
+          cp packages/plugin-providers/index.js "$RUNNER_TEMP/antigravity-index.js"
+          cp packages/plugin-providers/login.js "$RUNNER_TEMP/antigravity-login.js"
+          node scripts/materialize-antigravity-oauth.mjs
+          grep -q 'test-client.apps.googleusercontent.com' packages/plugin-providers/index.js
+          grep -q 'test-client-secret' packages/plugin-providers/login.js
+          mv "$RUNNER_TEMP/antigravity-index.js" packages/plugin-providers/index.js
+          mv "$RUNNER_TEMP/antigravity-login.js" packages/plugin-providers/login.js
       - name: Validate index.json
         run: pnpm run validate:index
+      - name: Pack Antigravity provider without publishing
+        run: |
+          mkdir -p "$RUNNER_TEMP/plugin-providers-pack"
+          pnpm --filter @everywhere-harness/plugin-providers pack --pack-destination "$RUNNER_TEMP/plugin-providers-pack"
       - name: Pack client UI chat without publishing
         run: |
           mkdir -p "$RUNNER_TEMP/client-ui-chat-pack"

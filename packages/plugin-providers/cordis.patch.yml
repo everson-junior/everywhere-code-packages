@@ -1,79 +1,72 @@
-# The web profile already owns pi-ai; extend its complete config while
-# preserving existing routes and adding the Omniroute Custom Model API.
-# The secret belongs in the Harness credential store, not in this file.
-- id: llm-pi-ai
-  name: '@deepseek-ai/dsh-llm-pi-ai'
-  config:
-    providers:
-      openai:
-        baseURL: http://localhost:2028/v1
-        apiKeyEnv: OPENAI_API_KEY
-      openrouter:
-        baseURL: http://localhost:2028/v1
-        apiKeyEnv: OPENROUTER_API_KEY
-      custom-providers:
-        displayName: Omniroute
-        api: openai-completions
-        baseURL: http://localhost:2028/v1
-        apiKeyEnv: OMNIROUTE_API_KEY
-        defaultContextWindow: 872000
-        defaultMaxTokens: 128000
-        defaultInput:
-          - text
-          - image
-        models:
-          - id: auto/best-coding
-            name: Auto Best Coding
-            contextWindow: 872000
-            maxTokens: 128000
-            input:
+# @everywhere-harness/plugin-providers
+# Installs the Antigravity OAuth Host/proxy and an isolated llm-pi-ai route.
+# A separate adapter row avoids replacing the user's existing llm-pi-ai config.
+- insert:
+    - id: providers-antigravity
+      name: '@everywhere-harness/plugin-providers'
+      config: {}
+    - id: antigravity-llm-pi-ai
+      name: '@deepseek-ai/dsh-llm-pi-ai'
+      config:
+        providers:
+          antigravity:
+            displayName: Antigravity
+            api: openai-completions
+            baseURL: http://127.0.0.1:3005/v1
+            apiKeyEnv: ANTIGRAVITY_PROXY_KEY
+            defaultContextWindow: 1048576
+            defaultMaxTokens: 65536
+            defaultInput:
               - text
               - image
-          - id: auto/best-reasoning
-            name: Auto Best Reasoning
-            contextWindow: 872000
-            maxTokens: 128000
-            input:
-              - text
-              - image
-          - id: auto/best-fast
-            name: Auto Best Fast
-            contextWindow: 872000
-            maxTokens: 128000
-            input:
-              - text
-              - image
-          - id: auto/best-vision
-            name: Auto Best Vision
-            contextWindow: 872000
-            maxTokens: 128000
-            input:
-              - text
-              - image
-          - id: auto/best-chat
-            name: Auto Best Chat
-            contextWindow: 872000
-            maxTokens: 128000
-            input:
-              - text
-              - image
-          - id: deepseek/deepseek-v4-flash
-            name: DeepSeek V4 Flash
-            contextWindow: 1048576
-            maxTokens: 128000
-            input:
-              - text
-              - image
-          - id: openai/gpt-oss-120b
-            name: GPT OSS 120B
-            contextWindow: 131072
-            maxTokens: 32768
-            input:
-              - text
-          - id: anthropic/claude-sonnet-4-5
-            name: Claude Sonnet 4.5
-            contextWindow: 200000
-            maxTokens: 8192
-            input:
-              - text
-              - image
+            models:
+              - id: antigravity/gemini-3.7-flash-high
+                name: Gemini 3.7 Flash (High)
+                contextWindow: 1048576
+                maxTokens: 65536
+                input: [text, image]
+              - id: antigravity/gemini-3.7-flash-medium
+                name: Gemini 3.7 Flash (Medium)
+                contextWindow: 1048576
+                maxTokens: 65536
+                input: [text, image]
+              - id: antigravity/gemini-3.7-flash-low
+                name: Gemini 3.7 Flash (Low)
+                contextWindow: 1048576
+                maxTokens: 65536
+                input: [text, image]
+              - id: antigravity/gemini-3.7-flash-tiered
+                name: Gemini 3.7 Flash (Tiered)
+                contextWindow: 1048576
+                maxTokens: 65536
+                input: [text, image]
+              - id: antigravity/gemini-pro-agent
+                name: Gemini Pro Agent
+                contextWindow: 2097152
+                maxTokens: 65536
+                input: [text, image]
+              - id: antigravity/gemini-3.1-pro-low
+                name: Gemini 3.1 Pro (Low)
+                contextWindow: 2097152
+                maxTokens: 65536
+                input: [text, image]
+              - id: antigravity/gemini-3.1-flash-lite
+                name: Gemini 3.1 Flash Lite
+                contextWindow: 1048576
+                maxTokens: 65536
+                input: [text, image]
+              - id: antigravity/claude-opus-4-6-thinking
+                name: Claude Opus 4.6 (Thinking)
+                contextWindow: 200000
+                maxTokens: 16384
+                input: [text, image]
+              - id: antigravity/claude-sonnet-4-6
+                name: Claude Sonnet 4.6
+                contextWindow: 200000
+                maxTokens: 16384
+                input: [text, image]
+              - id: antigravity/gpt-oss-120b-medium
+                name: GPT OSS 120B (Medium)
+                contextWindow: 131072
+                maxTokens: 32768
+                input: [text]

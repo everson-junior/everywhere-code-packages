@@ -58,6 +58,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Materialize Antigravity OAuth client for npm artifact
+        env:
+          ANTIGRAVITY_OAUTH_CLIENT_ID: ${{ secrets.ANTIGRAVITY_OAUTH_CLIENT_ID }}
+          ANTIGRAVITY_OAUTH_CLIENT_SECRET: ${{ secrets.ANTIGRAVITY_OAUTH_CLIENT_SECRET }}
+        run: node scripts/materialize-antigravity-oauth.mjs
+
+      - name: Verify materialized Antigravity artifact
+        run: |
+          if grep -R '__ANTIGRAVITY_OAUTH_' packages/plugin-providers/index.js packages/plugin-providers/login.js; then
+            echo 'OAuth placeholder remains after materialization' >&2
+            exit 1
+          fi
+          node --check packages/plugin-providers/index.js
+          node --check packages/plugin-providers/login.js
+
       - name: Publish approved marketplace packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

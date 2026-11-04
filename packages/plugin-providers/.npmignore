@@ -1,0 +1,8 @@
+# Publication is primarily controlled by package.json "files".
+.env
+.env.*
+!.env.example
+proxy-standalone.js
+*.log
+*.tgz
+.env.example

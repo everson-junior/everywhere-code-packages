@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Omniroute Provider",
-    "description": "Adds Omniroute as a custom OpenAI-compatible model API at http://localhost:2028/v1."
+    "title": "Antigravity Provider",
+    "description": "Connects Antigravity to Harness with Google sign-in, multimodal models, streaming, and tools."
   }
 }

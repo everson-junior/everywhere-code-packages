@@ -1,23 +1,33 @@
 {
   "name": "@everywhere-harness/plugin-providers",
-  "version": "1.0.0",
-  "description": "OpenAI-compatible local model provider for Everywhere Harness, configured for a localhost/v1 endpoint.",
+  "version": "1.1.0",
+  "description": "Provider Antigravity para Everywhere Harness com login Google, proxy Cloud Code, ferramentas, streaming e imagens.",
   "keywords": [
     "openai-compatible",
-    "local-llm",
     "provider",
     "everywhere-harness",
-    "deepseek-harness"
+    "deepseek-harness",
+    "antigravity",
+    "google-oauth",
+    "cloud-code",
+    "multimodal"
   ],
   "author": "Everson Junior",
   "license": "MIT",
   "type": "module",
+  "main": "./index.js",
   "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg"
   },
   "files": [
+    "index.js",
+    "client.js",
+    "antigravity-proxy.js",
+    "login.js",
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
@@ -31,10 +41,18 @@
     "url": "https://github.com/everson-junior/everywhere-makertplace-harness.git",
     "directory": "packages/plugin-providers"
   },
-  "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness#readme",
+  "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness/tree/main/packages/plugin-providers#readme",
+  "engines": {
+    "dsh": ">=0.2.1-rc.5"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-settings-models"]
     }
   }
 }
