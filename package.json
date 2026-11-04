@@ -7,5 +7,8 @@
     "validate:index": "node scripts/validate-index.js",
     "publish:packages": "pnpm -r publish --access public --no-git-checks"
   },
+  "devDependencies": {
+    "yaml": "2.9.1"
+  },
   "type": "module"
 }
