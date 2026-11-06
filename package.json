@@ -1,6 +1,6 @@
 {
   "name": "@everywhere-harness/ewh",
-  "version": "0.2.9",
+  "version": "0.2.11",
   "description": "Alias for the official DeepSeek Harness CLI",
   "license": "MIT",
   "type": "module",
@@ -15,12 +15,7 @@
     "prepack": "npm test"
   },
   "dependencies": {
-    "@deepseek-ai/dsh": "0.2.1-rc.5",
-    "@deepseek-ai/dsh-client-ui-plugin-market": "0.2.1-rc.5",
-    "@deepseek-ai/dsh-plugin-market": "0.2.1-rc.5",
-    "@everywhere-harness/client-ui-chat": "0.1.0",
-    "@everywhere-harness/plugin-providers": "1.0.0",
-    "@everywhere-harness/preset-protheus": "1.0.0"
+    "@deepseek-ai/dsh": "0.2.1-rc.5"
   },
   "engines": {
     "node": ">=24.9.0"
