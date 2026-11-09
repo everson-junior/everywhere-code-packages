@@ -11,8 +11,7 @@ const ewhJs = join(__dirname, 'ewh.js');
 // Use the @latest tag so a new npm release is picked up on reinstall/update.
 const webPlugins = [
   '@everywhere-harness/plugin-providers@latest',
-  '@everywhere-harness/client-ui-chat@latest',
-  '@deepseek-ai/dsh-experimental-plugin-market-bundle@latest'
+  '@everywhere-harness/client-ui-chat@latest'
 ];
 
 const packageName = (specifier) => specifier.slice(0, specifier.lastIndexOf('@'));
