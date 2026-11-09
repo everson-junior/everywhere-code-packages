@@ -1,8 +1,8 @@
 import { spawnSync } from 'node:child_process';
-import { readFile, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
+import { chmod, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { homedir, tmpdir } from 'node:os';
+import { delimiter, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ewhJs = join(__dirname, 'ewh.js');
@@ -16,6 +16,36 @@ const webPlugins = [
 ];
 
 const packageName = (specifier) => specifier.slice(0, specifier.lastIndexOf('@'));
+
+async function ensurePnpm() {
+  const command = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+  const probe = spawnSync(command, ['--version'], { stdio: 'ignore', shell: process.platform === 'win32' });
+  if (!probe.error && probe.status === 0) return undefined;
+
+  const binDirectory = await mkdtemp(join(tmpdir(), 'ewh-pnpm-'));
+  const npmArgs = [
+    'install',
+    '--no-save',
+    '--no-package-lock',
+    '--prefix',
+    binDirectory,
+    'pnpm@12.18.0'
+  ];
+  const npmExecPath = process.env.npm_execpath;
+  const install = npmExecPath
+    ? spawnSync(process.execPath, [npmExecPath, ...npmArgs], { stdio: 'inherit' })
+    : spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', npmArgs, {
+      stdio: 'inherit',
+      shell: process.platform === 'win32'
+    });
+  if (install.error) throw install.error;
+  if (install.status !== 0) process.exit(install.status ?? 1);
+
+  const pnpmBinary = join(binDirectory, 'node_modules', '.bin', command);
+  if (process.platform !== 'win32') await chmod(pnpmBinary, 0o755);
+  process.env.PATH = `${join(binDirectory, 'node_modules', '.bin')}${delimiter}${process.env.PATH ?? ''}`;
+  return async () => rm(binDirectory, { recursive: true, force: true });
+}
 
 function profileDirectory() {
   const dshHome = process.env.DSH_HOME || join(homedir(), '.dsh');
@@ -39,6 +69,7 @@ async function enableWebBundles() {
 
 console.log('[ewh postinstall] Installing latest plugins for the web profile...');
 
+const cleanupPnpm = await ensurePnpm();
 const result = spawnSync(process.execPath, [
   ewhJs,
   'plugin',
@@ -56,3 +87,4 @@ if (result.status !== 0) {
   await enableWebBundles();
   console.log('[ewh postinstall] Web profile plugins installed and enabled.');
 }
+await cleanupPnpm?.();
