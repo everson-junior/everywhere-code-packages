@@ -37,7 +37,7 @@ test('package version is ready for the next release', async () => {
   const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'))
   const lockfile = JSON.parse(await readFile(new URL('../package-lock.json', import.meta.url), 'utf8'))
 
-  assert.equal(manifest.version, '0.2.13')
+  assert.equal(manifest.version, '0.2.16')
   assert.equal(lockfile.version, manifest.version)
   assert.equal(lockfile.packages[''].version, manifest.version)
 })
