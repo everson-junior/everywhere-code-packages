@@ -29,15 +29,12 @@ A instalação global configura automaticamente o perfil `web` com estes plugins
 
 - `@everywhere-harness/plugin-providers`
 - `@everywhere-harness/client-ui-chat`
-- `@deepseek-ai/dsh-experimental-plugin-market-bundle`
 
-Além de instalar os pacotes, o `postinstall` garante que os três bundles estejam
-na lista `dsh.profile.bundles` do perfil. Isso faz com que apareçam como
-**Habilitados**, inclusive o `@deepseek-ai/dsh-plugin-market`, que é carregado
-pelo bundle experimental. A rotina é idempotente e atualizações futuras usam
-`@latest` novamente. Em ambientes sem `pnpm` (como runners limpos do GitHub
-Actions), o script instala temporariamente o `pnpm` necessário para concluir a
-configuração.
+Além de instalar os pacotes, o `postinstall` garante que os dois bundles estejam
+na lista `dsh.profile.bundles` do perfil. A rotina é idempotente e atualizações
+futuras usam `@latest` novamente. Em ambientes sem `pnpm` (como runners limpos
+do GitHub Actions), o script instala temporariamente o `pnpm` necessário para
+concluir a configuração.
 
 Para adicionar outro plugin automaticamente, basta incluir seu package specifier
 no array `webPlugins` de `bin/postinstall.js`. Se o pacote for um bundle Cordis
