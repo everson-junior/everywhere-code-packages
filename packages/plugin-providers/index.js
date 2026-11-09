@@ -73,8 +73,79 @@ const CRED_KEY = 'providers-antigravity/antigravity-oauth';
 const PROXY_KEY_REF = 'ANTIGRAVITY_PROXY_KEY';
 const PROXY_INTERNAL_KEY = 'antigravity-proxy-internal';
 
+const DEFAULT_ANTIGRAVITY_PROVIDER = {
+  displayName: 'Antigravity',
+  api: 'openai-completions',
+  baseURL: 'http://127.0.0.1:3005/v1',
+  apiKeyEnv: PROXY_KEY_REF,
+  defaultContextWindow: 1048576,
+  defaultMaxTokens: 65536,
+  defaultInput: ['text', 'image'],
+  models: [
+    { id: 'antigravity/gemini-3.7-flash-high', name: 'Gemini 3.7 Flash (High)', input: ['text', 'image'] },
+    { id: 'antigravity/gemini-3.7-flash-medium', name: 'Gemini 3.7 Flash (Medium)', input: ['text', 'image'] },
+    { id: 'antigravity/gemini-3.7-flash-low', name: 'Gemini 3.7 Flash (Low)', input: ['text', 'image'] },
+    { id: 'antigravity/gemini-3.7-flash-tiered', name: 'Gemini 3.7 Flash (Tiered)', input: ['text', 'image'] },
+    { id: 'antigravity/gemini-pro-agent', name: 'Gemini Pro Agent', contextWindow: 2097152, input: ['text', 'image'] },
+    { id: 'antigravity/gemini-3.1-pro-low', name: 'Gemini 3.1 Pro (Low)', contextWindow: 2097152, input: ['text', 'image'] },
+    { id: 'antigravity/gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', input: ['text', 'image'] },
+    { id: 'antigravity/claude-opus-4-6-thinking', name: 'Claude Opus 4.6 (Thinking)', contextWindow: 200000, maxTokens: 16384, input: ['text', 'image'] },
+    { id: 'antigravity/claude-sonnet-4-6', name: 'Claude Sonnet 4.6', contextWindow: 200000, maxTokens: 16384, input: ['text', 'image'] },
+    { id: 'antigravity/gpt-oss-120b-medium', name: 'GPT OSS 120B (Medium)', contextWindow: 131072, maxTokens: 32768, input: ['text'] },
+  ],
+};
+
+const DEFAULT_OMNIROUTE_PROVIDER = {
+  displayName: 'Omniroute',
+  api: 'openai-completions',
+  baseURL: 'http://localhost:2028/v1',
+  apiKeyEnv: 'OMNIROUTE_API_KEY',
+  defaultContextWindow: 872000,
+  defaultMaxTokens: 128000,
+  defaultInput: ['text', 'image'],
+  models: [
+    { id: 'auto/best-coding', name: 'Auto Best Coding', contextWindow: 872000, maxTokens: 128000, input: ['text', 'image'] },
+    { id: 'auto/best-reasoning', name: 'Auto Best Reasoning', contextWindow: 872000, maxTokens: 128000, input: ['text', 'image'] },
+    { id: 'auto/best-fast', name: 'Auto Best Fast', contextWindow: 872000, maxTokens: 128000, input: ['text', 'image'] },
+    { id: 'auto/best-vision', name: 'Auto Best Vision', contextWindow: 872000, maxTokens: 128000, input: ['text', 'image'] },
+    { id: 'auto/best-chat', name: 'Auto Best Chat', contextWindow: 872000, maxTokens: 128000, input: ['text', 'image'] },
+    { id: 'deepseek/deepseek-v4-flash', name: 'DeepSeek V4 Flash', contextWindow: 1048576, maxTokens: 128000, input: ['text', 'image'] },
+    { id: 'openai/gpt-oss-120b', name: 'GPT OSS 120B', contextWindow: 131072, maxTokens: 32768, input: ['text'] },
+    { id: 'anthropic/claude-sonnet-4-5', name: 'Claude Sonnet 4.5', contextWindow: 200000, maxTokens: 8192, input: ['text', 'image'] },
+  ],
+};
+
+async function ensureDefaultProviderRoutes(ctx) {
+  const editor = ctx.get('configEditor');
+  if (!editor) return;
+  const entry = editor.entries().find((candidate) => (
+    candidate.options.id === 'llm-pi-ai'
+    || candidate.options.id === 'include:llm-pi-ai'
+  ));
+  if (!entry) {
+    ctx.logger.warn('Antigravity/Omniroute routes were not configured: llm-pi-ai is not mounted.');
+    return;
+  }
+
+  const current = entry.options.config || {};
+  const existing = current.providers || {};
+  const additions = {};
+  if (!Object.hasOwn(existing, 'antigravity')) additions.antigravity = structuredClone(DEFAULT_ANTIGRAVITY_PROVIDER);
+  if (!Object.hasOwn(existing, 'custom-providers')) additions['custom-providers'] = structuredClone(DEFAULT_OMNIROUTE_PROVIDER);
+  if (Object.keys(additions).length === 0) return;
+
+  await editor.edit(entry, (raw) => ({
+    ...raw,
+    providers: {
+      ...(raw.providers || {}),
+      ...additions,
+    },
+  }));
+  ctx.logger.info(`Configured ${Object.keys(additions).join(' and ')} routes in the existing llm-pi-ai adapter.`);
+}
+
 // ── Cordis plugin ──────────────────────────────────────────────────
-export const inject = ['authorization', 'credentials'];
+export const inject = ['authorization', 'credentials', 'configEditor'];
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -136,6 +207,14 @@ async function refreshAccessToken(refreshToken) {
  * }} ctx
  */
 export function apply(ctx) {
+  // Add the provider routes to the already-mounted llm-pi-ai adapter.
+  // This is idempotent and never mounts a second adapter instance.
+  ctx.effect(() => {
+    void ensureDefaultProviderRoutes(ctx).catch((error) => {
+      ctx.logger.warn(`Could not configure default provider routes: ${String(error?.message || error)}`);
+    });
+  });
+
   // ── Register OAuth authorization flow ────────────────────────────
   const disposeFlow = ctx.authorization.registerFlow({
     key: CRED_KEY,

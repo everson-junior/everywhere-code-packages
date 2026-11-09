@@ -6,7 +6,7 @@ Integra o Antigravity ao Everywhere/DeepSeek Harness com autenticação Google O
 
 O bundle monta apenas o plugin Host OAuth/proxy. A rota `antigravity` é adicionada ao `llm-pi-ai` já montado pelo perfil, evitando uma segunda instância do adaptador. Duas instâncias publicando o catálogo pi-ai entram em conflito — por exemplo, com `amazon-bedrock` — e fazem o bundle falhar ao habilitar.
 
-A configuração da rota fica no overlay do perfil e pode ser substituída pelo operador conforme necessário.
+Ao ativar o bundle, o Host verifica a instância existente de `llm-pi-ai` e adiciona, uma única vez, as rotas `antigravity` e `custom-providers` (Omniroute), preservando todas as rotas existentes. Nenhuma segunda instância do adaptador é montada. As rotas são gravadas no overlay do perfil pelo Config Editor e aparecem em **Settings → Models** após a reconciliação; o operador pode ajustar ou remover as rotas conforme necessário.
 
 ## Instalação
 
