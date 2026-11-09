@@ -6,3 +6,4 @@ apps/desktop/*.p12
 node_modules/
 *.tgz
 coverage/
+.vscode/

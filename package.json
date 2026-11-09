@@ -1,6 +1,6 @@
 {
   "name": "@everywhere-harness/ewh",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "Alias for the official DeepSeek Harness CLI",
   "license": "MIT",
   "type": "module",
