@@ -2,6 +2,12 @@
 
 Integra o Antigravity ao Everywhere/DeepSeek Harness com autenticação Google OAuth, proxy local OpenAI-compatible e suporte a texto, imagens, streaming e ferramentas.
 
+## Correção da ativação
+
+O bundle monta apenas o plugin Host OAuth/proxy. A rota `antigravity` é adicionada ao `llm-pi-ai` já montado pelo perfil, evitando uma segunda instância do adaptador. Duas instâncias publicando o catálogo pi-ai entram em conflito — por exemplo, com `amazon-bedrock` — e fazem o bundle falhar ao habilitar.
+
+A configuração da rota fica no overlay do perfil e pode ser substituída pelo operador conforme necessário.
+
 ## Instalação
 
 Instale o bundle pela loja de plugins. O bundle adiciona automaticamente:

@@ -1,72 +1,10 @@
 # @everywhere-harness/plugin-providers
-# Installs the Antigravity OAuth Host/proxy and an isolated llm-pi-ai route.
-# A separate adapter row avoids replacing the user's existing llm-pi-ai config.
+# Installs the Antigravity OAuth/proxy Host plugin.
+# The route is added to the base llm-pi-ai instance by the profile overlay;
+# this bundle must not mount a second llm-pi-ai adapter because each instance
+# publishes the installed pi-ai catalog and collides on providers such as
+# amazon-bedrock.
 - insert:
     - id: providers-antigravity
       name: '@everywhere-harness/plugin-providers'
       config: {}
-    - id: antigravity-llm-pi-ai
-      name: '@deepseek-ai/dsh-llm-pi-ai'
-      config:
-        providers:
-          antigravity:
-            displayName: Antigravity
-            api: openai-completions
-            baseURL: http://127.0.0.1:3005/v1
-            apiKeyEnv: ANTIGRAVITY_PROXY_KEY
-            defaultContextWindow: 1048576
-            defaultMaxTokens: 65536
-            defaultInput:
-              - text
-              - image
-            models:
-              - id: antigravity/gemini-3.7-flash-high
-                name: Gemini 3.7 Flash (High)
-                contextWindow: 1048576
-                maxTokens: 65536
-                input: [text, image]
-              - id: antigravity/gemini-3.7-flash-medium
-                name: Gemini 3.7 Flash (Medium)
-                contextWindow: 1048576
-                maxTokens: 65536
-                input: [text, image]
-              - id: antigravity/gemini-3.7-flash-low
-                name: Gemini 3.7 Flash (Low)
-                contextWindow: 1048576
-                maxTokens: 65536
-                input: [text, image]
-              - id: antigravity/gemini-3.7-flash-tiered
-                name: Gemini 3.7 Flash (Tiered)
-                contextWindow: 1048576
-                maxTokens: 65536
-                input: [text, image]
-              - id: antigravity/gemini-pro-agent
-                name: Gemini Pro Agent
-                contextWindow: 2097152
-                maxTokens: 65536
-                input: [text, image]
-              - id: antigravity/gemini-3.1-pro-low
-                name: Gemini 3.1 Pro (Low)
-                contextWindow: 2097152
-                maxTokens: 65536
-                input: [text, image]
-              - id: antigravity/gemini-3.1-flash-lite
-                name: Gemini 3.1 Flash Lite
-                contextWindow: 1048576
-                maxTokens: 65536
-                input: [text, image]
-              - id: antigravity/claude-opus-4-6-thinking
-                name: Claude Opus 4.6 (Thinking)
-                contextWindow: 200000
-                maxTokens: 16384
-                input: [text, image]
-              - id: antigravity/claude-sonnet-4-6
-                name: Claude Sonnet 4.6
-                contextWindow: 200000
-                maxTokens: 16384
-                input: [text, image]
-              - id: antigravity/gpt-oss-120b-medium
-                name: GPT OSS 120B (Medium)
-                contextWindow: 131072
-                maxTokens: 32768
-                input: [text]
