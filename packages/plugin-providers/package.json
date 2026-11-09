@@ -1,6 +1,6 @@
 {
   "name": "@everywhere-harness/plugin-providers",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Provider Antigravity para Everywhere Harness com login Google, proxy Cloud Code, ferramentas, streaming e imagens.",
   "keywords": [
     "openai-compatible",
