@@ -116,36 +116,52 @@ const DEFAULT_OMNIROUTE_PROVIDER = {
 };
 
 async function ensureDefaultProviderRoutes(ctx) {
+  const settings = ctx.get('settings');
+  if (settings?.describe && settings?.mutate) {
+    const descriptor = settings.describe().find((item) => {
+      const ns = String(item.ns);
+      return ns === 'llm-pi-ai' || ns === 'include:llm-pi-ai' || ns.endsWith(':llm-pi-ai');
+    });
+    const existing = descriptor?.value?.providers || {};
+    const additions = [];
+    if (!Object.hasOwn(existing, 'antigravity')) additions.push({
+      op: 'set',
+      path: ['providers', 'antigravity'],
+      value: structuredClone(DEFAULT_ANTIGRAVITY_PROVIDER),
+    });
+    if (!Object.hasOwn(existing, 'custom-providers')) additions.push({
+      op: 'set',
+      path: ['providers', 'custom-providers'],
+      value: structuredClone(DEFAULT_OMNIROUTE_PROVIDER),
+    });
+    if (additions.length === 0) return;
+    await settings.mutate(String(descriptor.ns), additions, descriptor.revision);
+    ctx.logger.info('Configured default Antigravity and Omniroute routes in llm-pi-ai settings.');
+    return;
+  }
+
+  // Compatibility fallback for compositions without the Settings service.
   const editor = ctx.get('configEditor');
   if (!editor) return;
   const entry = editor.entries().find((candidate) => (
     candidate.options.id === 'llm-pi-ai'
     || candidate.options.id === 'include:llm-pi-ai'
+    || candidate.options.name === '@deepseek-ai/dsh-llm-pi-ai'
   ));
   if (!entry) {
     ctx.logger.warn('Antigravity/Omniroute routes were not configured: llm-pi-ai is not mounted.');
     return;
   }
-
-  const current = entry.options.config || {};
-  const existing = current.providers || {};
+  const existing = entry.options.config?.providers || {};
   const additions = {};
   if (!Object.hasOwn(existing, 'antigravity')) additions.antigravity = structuredClone(DEFAULT_ANTIGRAVITY_PROVIDER);
   if (!Object.hasOwn(existing, 'custom-providers')) additions['custom-providers'] = structuredClone(DEFAULT_OMNIROUTE_PROVIDER);
   if (Object.keys(additions).length === 0) return;
-
-  await editor.edit(entry, (raw) => ({
-    ...raw,
-    providers: {
-      ...(raw.providers || {}),
-      ...additions,
-    },
-  }));
-  ctx.logger.info(`Configured ${Object.keys(additions).join(' and ')} routes in the existing llm-pi-ai adapter.`);
+  await editor.edit(entry, (raw) => ({ ...raw, providers: { ...(raw.providers || {}), ...additions } }));
 }
 
 // ── Cordis plugin ──────────────────────────────────────────────────
-export const inject = ['authorization', 'credentials', 'configEditor'];
+export const inject = ['authorization', 'credentials', 'settings', 'configEditor'];
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -208,11 +224,18 @@ async function refreshAccessToken(refreshToken) {
  */
 export function apply(ctx) {
   // Add the provider routes to the already-mounted llm-pi-ai adapter.
-  // This is idempotent and never mounts a second adapter instance.
-  ctx.effect(() => {
+  // This is idempotent and never mounts a second adapter instance. The first
+  // pass may run before the profile row has finished reconciling, so retry on
+  // the Loader's settled config-reload event as well.
+  const reconcileRoutes = () => {
     void ensureDefaultProviderRoutes(ctx).catch((error) => {
       ctx.logger.warn(`Could not configure default provider routes: ${String(error?.message || error)}`);
     });
+  };
+  ctx.effect(() => {
+    const disposeReload = ctx.on('app-boot/config-reload', reconcileRoutes);
+    reconcileRoutes();
+    return disposeReload;
   });
 
   // ── Register OAuth authorization flow ────────────────────────────
