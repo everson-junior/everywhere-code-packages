@@ -25,6 +25,23 @@ npm install -g @everywhere-harness/ewh
 ewh web
 ```
 
+A instalação global configura automaticamente o perfil `web` com estes plugins, sempre usando a versão mais recente publicada:
+
+- `@everywhere-harness/plugin-providers`
+- `@everywhere-harness/client-ui-chat`
+- `@deepseek-ai/dsh-experimental-plugin-market-bundle`
+
+Além de instalar os pacotes, o `postinstall` garante que os três bundles estejam
+na lista `dsh.profile.bundles` do perfil. Isso faz com que apareçam como
+**Habilitados**, inclusive o `@deepseek-ai/dsh-plugin-market`, que é carregado
+pelo bundle experimental. A rotina é idempotente e atualizações futuras usam
+`@latest` novamente.
+
+Para adicionar outro plugin automaticamente, basta incluir seu package specifier
+no array `webPlugins` de `bin/postinstall.js`. Se o pacote for um bundle Cordis
+(com `dsh.bundle.patch`), ele também será habilitado automaticamente pelo mesmo
+fluxo.
+
 O comando `ewh` encaminha os argumentos, a entrada e saida do terminal, os sinais e o codigo de saida para o executavel oficial `dsh`.
 
 ## Comandos

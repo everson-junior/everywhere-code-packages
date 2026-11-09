@@ -1,6 +1,6 @@
 {
   "name": "@everywhere-harness/ewh",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "Alias for the official DeepSeek Harness CLI",
   "license": "MIT",
   "type": "module",
@@ -8,11 +8,13 @@
     "ewh": "bin/ewh.js"
   },
   "files": [
-    "bin/ewh.js"
+    "bin/ewh.js",
+    "bin/postinstall.js"
   ],
   "scripts": {
     "test": "node --test",
-    "prepack": "npm test"
+    "prepack": "npm test",
+    "postinstall": "node bin/postinstall.js"
   },
   "dependencies": {
     "@deepseek-ai/dsh": "0.2.1-rc.5"
