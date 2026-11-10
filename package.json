@@ -4,6 +4,9 @@
   "private": true,
   "description": "Marketplace of plugins and presets for Everywhere Harness",
   "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "test": "pnpm -r --if-present run test",
+    "typecheck": "pnpm -r --if-present run typecheck",
     "validate:index": "node scripts/validate-index.js",
     "publish:packages": "pnpm -r publish --access public --no-git-checks"
   },

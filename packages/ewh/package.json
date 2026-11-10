@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "test": "node --test",
-    "prepack": "npm test",
+    "prepack": "node --test",
     "postinstall": "node bin/postinstall.js"
   },
   "dependencies": {
@@ -27,6 +27,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/everson-junior/everywhere-harness.git"
-  }
+    "url": "git+https://github.com/everson-junior/everywhere-code-packages.git",
+    "directory": "packages/ewh"
+  },
+  "homepage": "https://github.com/everson-junior/everywhere-code-packages/tree/main/packages/ewh#readme"
 }

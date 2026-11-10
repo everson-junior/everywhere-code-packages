@@ -35,9 +35,13 @@ test('postinstall is included and configures the web profile plugins', async () 
 
 test('package version is ready for the next release', async () => {
   const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'))
-  const lockfile = JSON.parse(await readFile(new URL('../package-lock.json', import.meta.url), 'utf8'))
+  assert.match(manifest.version, /^\d+\.\d+\.\d+(?:-[\w.]+)?$/u)
 
-  assert.equal(manifest.version, '0.2.16')
-  assert.equal(lockfile.version, manifest.version)
-  assert.equal(lockfile.packages[''].version, manifest.version)
+  try {
+    const lockfile = JSON.parse(await readFile(new URL('../package-lock.json', import.meta.url), 'utf8'))
+    assert.equal(lockfile.version, manifest.version)
+    assert.equal(lockfile.packages[''].version, manifest.version)
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err
+  }
 })

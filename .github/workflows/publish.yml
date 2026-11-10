@@ -75,14 +75,15 @@ jobs:
 
       - name: Publish approved marketplace packages
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.NPM_ACCESS_TOKEN }}
         run: |
           tag="${{ github.event.inputs.dist_tag || 'latest' }}"
           echo "Publishing packages to npm with tag: $tag"
           for package in \
             @everywhere-harness/preset-protheus \
             @everywhere-harness/plugin-providers \
-            @everywhere-harness/client-ui-chat
+            @everywhere-harness/client-ui-chat \
+            @everywhere-harness/ewh
           do
             version=$(node -p "require('./packages/${package##*/}/package.json').version")
             if npm view "$package@$version" version >/dev/null 2>&1; then

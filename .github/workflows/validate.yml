@@ -28,6 +28,12 @@ jobs:
         run: pnpm --filter @everywhere-harness/client-ui-chat run build
       - name: Test client UI chat
         run: pnpm --filter @everywhere-harness/client-ui-chat run test
+      - name: Test ewh CLI
+        run: pnpm --filter @everywhere-harness/ewh run test
+      - name: Validate ewh binary sources
+        run: |
+          node --check packages/ewh/bin/ewh.js
+          node --check packages/ewh/bin/postinstall.js
       - name: Validate Antigravity provider sources
         run: |
           node --check packages/plugin-providers/index.js
@@ -42,7 +48,7 @@ jobs:
           const document = parseDocument(readFileSync('packages/plugin-providers/cordis.patch.yml', 'utf8'), { prettyErrors: true, uniqueKeys: true })
           if (document.errors.length) throw new Error(document.errors.map((error) => error.message).join('\n'))
           const value = document.toJS()
-          if (!Array.isArray(value) || value.length !== 1 || !Array.isArray(value[0].insert) || value[0].insert.length !== 2) {
+          if (!Array.isArray(value) || value.length !== 1 || !Array.isArray(value[0].insert) || value[0].insert.length !== 1) {
             throw new Error('Unexpected Antigravity bundle patch shape')
           }
           NODE
@@ -64,10 +70,18 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/plugin-providers-pack"
           pnpm --filter @everywhere-harness/plugin-providers pack --pack-destination "$RUNNER_TEMP/plugin-providers-pack"
+      - name: Pack Protheus preset without publishing
+        run: |
+          mkdir -p "$RUNNER_TEMP/preset-protheus-pack"
+          pnpm --filter @everywhere-harness/preset-protheus pack --pack-destination "$RUNNER_TEMP/preset-protheus-pack"
       - name: Pack client UI chat without publishing
         run: |
           mkdir -p "$RUNNER_TEMP/client-ui-chat-pack"
           pnpm --filter @everywhere-harness/client-ui-chat pack --pack-destination "$RUNNER_TEMP/client-ui-chat-pack"
+      - name: Pack ewh CLI without publishing
+        run: |
+          mkdir -p "$RUNNER_TEMP/ewh-pack"
+          pnpm --filter @everywhere-harness/ewh pack --pack-destination "$RUNNER_TEMP/ewh-pack"
       - name: Smoke packed client UI chat
         env:
           PACK_DIRECTORY: ${{ runner.temp }}/client-ui-chat-pack

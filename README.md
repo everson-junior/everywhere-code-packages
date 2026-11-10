@@ -1,6 +1,17 @@
-# Everywhere Harness Marketplace 🛒
+# Everywhere Harness Monorepo 🛒
 
-Repositório oficial do marketplace de plugins e presets para o **Everywhere Harness**.
+Repositório monorepo oficial do ecossistema **Everywhere Harness**: contém o launcher CLI (`@everywhere-harness/ewh`), identidade visual UI, provedores e o marketplace de plugins e presets.
+
+---
+
+## 📦 Pacotes no Monorepo
+
+| Pacote | Diretório | Descrição |
+|---|---|---|
+| [`@everywhere-harness/ewh`](packages/ewh) | `packages/ewh` | CLI oficial do Everywhere Harness (boot de profiles, launcher e instalador automático de plugins no perfil web). |
+| [`@everywhere-harness/client-ui-chat`](packages/client-ui-chat) | `packages/client-ui-chat` | Identidade visual Everywhere do chat e da sidebar: marca, wordmark, hero animado e slots. |
+| [`@everywhere-harness/plugin-providers`](packages/plugin-providers) | `packages/plugin-providers` | Provedor Antigravity com Google OAuth, proxy Cloud Code, ferramentas, streaming e suporte multimodal. |
+| [`@everywhere-harness/preset-protheus`](packages/preset-protheus) | `packages/preset-protheus` | Preset especializado para desenvolvimento em **TOTVS Protheus ERP** (AdvPL/TLPP, 35+ skills e migração SmartX). |
 
 ---
 
@@ -11,57 +22,70 @@ Repositório oficial do marketplace de plugins e presets para o **Everywhere Har
 3. Clique em **Index sources (Fontes de índice)**.
 4. Adicione a URL do índice deste marketplace:
    ```text
-   https://raw.githubusercontent.com/everson-junior/everywhere-makertplace-harness/main/index.json
+   https://raw.githubusercontent.com/everson-junior/everywhere-code-packages/main/index.json
    ```
 5. Os plugins e presets deste repositório aparecerão listados no catálogo prontos para instalação com um clique!
 
 ---
 
-## 📦 Plugins e Presets Disponíveis
+## 🛠️ Desenvolvimento e Validação
 
-### 1. `@everywhere-harness/preset-protheus` (Modo Protheus)
-- **Caminho**: [`packages/preset-protheus`](packages/preset-protheus)
-- **Descrição**: Preset especializado para desenvolvimento em **TOTVS Protheus ERP** utilizando **AdvPL** e **TLPP**.
-- **Perfil base**: Modo Minimal (Terminal PTY persistente Bash/PowerShell, compactação de contexto e visualização de imagens).
-- **Conteúdo incluído**:
-  - **35+ Skills especializadas**: Migração para TLPP, geradores MVC, endpoints REST TLPP, geradores de testes TIR/AdvPR, revisão de código SonarQube/SQL, otimização de queries, etc.
-  - **Diretrizes e Instruções de Contexto**: Padrões de engenharia Protheus (`AGENTS.md` e `CLAUDE.md` com notação húngara obrigatória, tipagem estática TLPP, etc.).
-  - **Agentes Customizados**: Especialista em migração de Browse para Smart X (`browse-to-smartx-migrator.agent.md`).
+O projeto utiliza **Node.js `>=24.9.0`** e **pnpm `11.21.0`** com suporte a workspaces (`pnpm-workspace.yaml`).
 
----
-
-## Client UI chat em desenvolvimento
-
-O pacote único [`@everywhere-harness/client-ui-chat`](packages/client-ui-chat/README.md), versão planejada `0.1.0`, reúne a identidade visual Everywhere do chat e da sidebar. A aprovação atual cobre branch/PR, **não publicação npm**. Ele permanece fora de `index.json` enquanto essa versão não existir no registry, evitando uma instalação com erro 404. Os plugins e presets existentes permanecem no catálogo.
-
-Marca e hero usam slots existentes nos pacotes DSH `0.2.1-rc.3`. A identidade completa requer os novos slots `conversation.chat.running.icon` e `shell.document.title`, ainda não publicados. O pacote aguarda a declaração de cada slot; hosts anteriores conservam seu indicador e título nativos. Veja a [matriz visual e as limitações](packages/client-ui-chat/README.md#matriz-do-delta-visual).
-
-## Validação de contribuições
-
-Use Node.js `>=24.9.0` e pnpm `11.21.0`, utilizado localmente e fixado no CI. O workspace permite o build de `esbuild` por `allowBuilds.esbuild: true`.
+### Instalação
 
 ```sh
-pnpm install --frozen-lockfile
-pnpm --filter @everywhere-harness/client-ui-chat run typecheck
-pnpm --filter @everywhere-harness/client-ui-chat run build
-pnpm --filter @everywhere-harness/client-ui-chat run test
-pnpm --filter @everywhere-harness/client-ui-chat run test:pack
-pnpm run validate:index
-pnpm --filter @everywhere-harness/client-ui-chat pack --pack-destination <diretorio-temporario>
+pnpm install
 ```
 
-O workflow **Validate Marketplace** executa essas verificações em pull requests, sem secrets de publicação e com permissão de leitura. O smoke obrigatório instala o tarball em um projeto temporário isolado e verifica os entrypoints host e client. O `prepack` também executa typecheck, build e testes. Empacotar não publica no npm.
+### Validações e Testes
+
+```sh
+# Executar todos os testes do monorepo
+pnpm test
+
+# Validação do catálogo de plugins
+pnpm run validate:index
+
+# Verificação de tipos TypeScript (client-ui-chat)
+pnpm run typecheck
+
+# Build dos pacotes necessários (client-ui-chat)
+pnpm run build
+
+# Teste e validação específica de cada pacote
+pnpm --filter @everywhere-harness/ewh run test
+pnpm --filter @everywhere-harness/client-ui-chat run test
+pnpm --filter @everywhere-harness/client-ui-chat run test:pack
+```
+
+### Empacotamento npm (Geração dos Tarballs `.tgz`)
+
+Para testar a geração dos pacotes npm sem publicar:
+
+```sh
+# Gerar tarballs para todos os pacotes
+pnpm --filter @everywhere-harness/ewh pack --pack-destination /tmp/dist
+pnpm --filter @everywhere-harness/client-ui-chat pack --pack-destination /tmp/dist
+pnpm --filter @everywhere-harness/plugin-providers pack --pack-destination /tmp/dist
+pnpm --filter @everywhere-harness/preset-protheus pack --pack-destination /tmp/dist
+```
 
 ---
 
 ## 🚀 Publicação no npm (GitHub Actions)
 
-Este repositório possui uma GitHub Action automatizada com lista explícita de publicação: somente `@everywhere-harness/preset-protheus` e `@everywhere-harness/plugin-providers`. Não existe pacote `plugin-models` nesta árvore. `@everywhere-harness/client-ui-chat` não está autorizado para publicação e fica excluído desse workflow.
+A publicação é gerenciada de forma centralizada pelo workflow [`.github/workflows/publish.yml`](.github/workflows/publish.yml):
 
-1. No repositório do GitHub em **Settings** > **Secrets and variables** > **Actions**, adicione o segredo:
-   - **Nome**: `NPM_TOKEN`
-   - **Valor**: Seu token de automação com permissão de publicação na organização npm `@everywhere-harness`.
+1. **Gatilhos**:
+   - Push na branch `main` com alterações em `packages/**` ou `index.json`.
+   - Criação de uma Release no GitHub.
+   - Execução manual via **Workflow Dispatch** com opção de `dist_tag` (padrão: `latest`).
 
-2. A publicação dos dois pacotes autorizados ocorre quando um push é feito na branch `main` com alterações em `packages/**` ou `index.json`, quando uma release é publicada, ou ao disparar o workflow **Publish Packages to npm** manualmente via **Actions**. Um PR não publica pacotes.
+2. **Secrets necessários**:
+   - `NPM_TOKEN` (ou `NPM_ACCESS_TOKEN`): Token de automação com permissão de publicação para o escopo `@everywhere-harness`.
+   - `ANTIGRAVITY_OAUTH_CLIENT_ID` e `ANTIGRAVITY_OAUTH_CLIENT_SECRET`: Credenciais OAuth necessárias para materialização segura do artefato de `plugin-providers`.
 
-O script raiz `publish:packages` continua recursivo e não deve ser usado nesta branch: ele não aplica a lista explícita do workflow. Uma futura release de `client-ui-chat` exige autorização separada, validação do tarball e confirmação da versão no npm antes de ativar sua entrada no catálogo, conforme o [README do pacote](packages/client-ui-chat/README.md#catalogo-e-release-futura).
+3. **Fluxo seguro de versionamento**:
+   - O workflow verifica cada pacote: se a versão já existir no registro npm (`npm view <pkg>@<ver>`), ela é pulada com segurança.
+   - Somente pacotes com versão incrementada são publicados via `pnpm publish --access public`.

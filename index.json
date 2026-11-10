@@ -57,9 +57,9 @@
         "pt": "Desenvolvimento TOTVS Protheus ERP em AdvPL/TLPP com skills especializadas, diretrizes e migração SmartX."
       },
       "author": "Everson Junior",
-      "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness",
+      "homepage": "https://github.com/everson-junior/everywhere-code-packages",
       "repository": {
-        "url": "https://github.com/everson-junior/everywhere-makertplace-harness",
+        "url": "https://github.com/everson-junior/everywhere-code-packages",
         "directory": "packages/preset-protheus"
       },
       "metadata": {
@@ -101,9 +101,9 @@
         "pt": "Integração Google OAuth para Antigravity com modelos Cloud Code, streaming, ferramentas e imagens."
       },
       "author": "Everson Junior",
-      "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness#readme",
+      "homepage": "https://github.com/everson-junior/everywhere-code-packages#readme",
       "repository": {
-        "url": "https://github.com/everson-junior/everywhere-makertplace-harness",
+        "url": "https://github.com/everson-junior/everywhere-code-packages",
         "directory": "packages/plugin-providers"
       },
       "metadata": {
@@ -143,9 +143,9 @@
         "pt": "Identidade visual Everywhere do chat e da sidebar: marca, wordmark, hero animado e indicador de execução."
       },
       "author": "Everson Junior",
-      "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness#readme",
+      "homepage": "https://github.com/everson-junior/everywhere-code-packages#readme",
       "repository": {
-        "url": "https://github.com/everson-junior/everywhere-makertplace-harness",
+        "url": "https://github.com/everson-junior/everywhere-code-packages",
         "directory": "packages/client-ui-chat"
       },
       "metadata": {

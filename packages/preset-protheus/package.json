@@ -32,10 +32,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/everson-junior/everywhere-makertplace-harness.git",
+    "url": "https://github.com/everson-junior/everywhere-code-packages.git",
     "directory": "packages/preset-protheus"
   },
-  "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness#readme",
+  "homepage": "https://github.com/everson-junior/everywhere-code-packages#readme",
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"

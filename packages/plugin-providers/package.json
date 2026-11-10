@@ -38,10 +38,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/everson-junior/everywhere-makertplace-harness.git",
+    "url": "https://github.com/everson-junior/everywhere-code-packages.git",
     "directory": "packages/plugin-providers"
   },
-  "homepage": "https://github.com/everson-junior/everywhere-makertplace-harness/tree/main/packages/plugin-providers#readme",
+  "homepage": "https://github.com/everson-junior/everywhere-code-packages/tree/main/packages/plugin-providers#readme",
   "engines": {
     "dsh": ">=0.2.1-rc.5"
   },
