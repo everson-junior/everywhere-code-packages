@@ -1,0 +1,32 @@
+{
+  "name": "@everywhere-harness/ewh",
+  "version": "0.2.16",
+  "description": "Alias for the official DeepSeek Harness CLI",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ewh": "bin/ewh.js"
+  },
+  "files": [
+    "bin/ewh.js",
+    "bin/postinstall.js"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "prepack": "npm test",
+    "postinstall": "node bin/postinstall.js"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.2.1-rc.5"
+  },
+  "engines": {
+    "node": ">=24.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/everson-junior/everywhere-harness.git"
+  }
+}

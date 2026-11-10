@@ -1,0 +1,9 @@
+CLAUDE.local.md
+.env
+apps/desktop/.env.windows
+apps/desktop/.env.macos
+apps/desktop/*.p12
+node_modules/
+*.tgz
+coverage/
+.vscode/
