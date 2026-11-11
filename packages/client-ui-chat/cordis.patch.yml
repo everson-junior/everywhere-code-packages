@@ -1,3 +1,6 @@
 - insert:
     - id: everywhere-client-ui-chat
       name: '@everywhere-harness/client-ui-chat'
+    - id: totvs
+      name: './totvs/index.js'
+      disabled: true

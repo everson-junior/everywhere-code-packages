@@ -1,5 +1,5 @@
 import { build } from 'esbuild'
-import { readFile, rm } from 'node:fs/promises'
+import { copyFile, readFile, rm } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
 import { execFileSync } from 'node:child_process'
@@ -9,6 +9,14 @@ const manifest = JSON.parse(await readFile(new URL('../package.json', import.met
 await rm(new URL('../lib', import.meta.url), { recursive: true, force: true })
 const require = createRequire(import.meta.url)
 execFileSync(process.execPath, [require.resolve('typescript/bin/tsc'), '-p', root], { stdio: 'inherit' })
+
+function clientWrapper(id) {
+  return {
+    banner: { js: `window.__ModuleLoader__.load({ id: ${JSON.stringify(id)}, factory: function(require) { const module = { exports: {} }; const exports = module.exports;` },
+    footer: { js: 'return module.exports; } });' },
+  }
+}
+
 await build({
   absWorkingDir: root,
   entryPoints: ['src/index.ts'],
@@ -29,6 +37,20 @@ await build({
   jsx: 'automatic',
   loader: { '.css': 'text' },
   external: ['react', 'react/jsx-runtime', '@deepseek-ai/cordis'],
-  banner: { js: `window.__ModuleLoader__.load({ id: ${JSON.stringify(manifest.name)}, factory: function(require) { const module = { exports: {} }; const exports = module.exports;` },
-  footer: { js: 'return module.exports; } });' },
+  ...clientWrapper(manifest.name),
 })
+await build({
+  absWorkingDir: root,
+  entryPoints: ['src/client/totvs-entry.ts'],
+  outfile: 'totvs/client.js',
+  bundle: true,
+  format: 'cjs',
+  platform: 'browser',
+  target: 'es2024',
+  jsx: 'automatic',
+  loader: { '.css': 'text' },
+  external: ['react', 'react/jsx-runtime', '@deepseek-ai/cordis'],
+  ...clientWrapper('@everywhere-harness/client-ui-chat-totvs'),
+})
+await copyFile(new URL('../lib/types/totvs.d.ts', import.meta.url), new URL('../totvs/index.d.ts', import.meta.url))
+await copyFile(new URL('../lib/types/client/totvs-entry.d.ts', import.meta.url), new URL('../totvs/client.d.ts', import.meta.url))

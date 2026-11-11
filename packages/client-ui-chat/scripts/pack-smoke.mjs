@@ -15,7 +15,7 @@ delete environment.NODE_OPTIONS
 function npm(args, cwd) {
   const command = process.platform === 'win32' ? process.execPath : 'npm'
   const commandArgs = process.platform === 'win32'
-    ? [join(dirname(execFileSync('where.exe', ['npm.cmd'], { encoding: 'utf8' }).trim().split(/\r?\n/)[0]), 'node_modules/npm/bin/npm-cli.js'), ...args]
+    ? [join(dirname(execFileSync(join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'where.exe'), ['npm.cmd'], { encoding: 'utf8' }).trim().split(/\r?\n/)[0]), 'node_modules/npm/bin/npm-cli.js'), ...args]
     : args
   return execFileSync(command, commandArgs, {
     cwd,
@@ -35,13 +35,14 @@ try {
   const archives = (await readdir(packDirectory)).filter(name => name.endsWith('.tgz'))
   assert.equal(archives.length, 1, 'PACK_DIRECTORY must contain exactly one tarball')
   const archive = join(packDirectory, archives[0])
-  const files = execFileSync('tar', ['-tzf', archive], { encoding: 'utf8' }).trim().split(/\r?\n/)
+  const tarCommand = process.platform === 'win32' ? join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'tar.exe') : 'tar'
+  const files = execFileSync(tarCommand, ['-tzf', archive], { encoding: 'utf8' }).trim().split(/\r?\n/)
   for (const file of files) {
-    assert.ok(/^package\/(?:package\.json|cordis\.patch\.yml|README\.md|LICENSE|lib(?:\/.*)?)$/.test(file), `Unexpected packed file: ${file}`)
+    assert.ok(/^package\/(?:package\.json|cordis\.patch\.yml|README\.md|LICENSE|lib(?:\/.*)?|totvs(?:\/.*)?)$/.test(file), `Unexpected packed file: ${file}`)
     assert.ok(!file.split('/').includes('..'), `Unsafe packed path: ${file}`)
     assert.ok(!file.includes('/node_modules/'), `Bundled node_modules: ${file}`)
   }
-  const manifest = JSON.parse(execFileSync('tar', ['-xOzf', archive, 'package/package.json'], { encoding: 'utf8' }))
+  const manifest = JSON.parse(execFileSync(tarCommand, ['-xOzf', archive, 'package/package.json'], { encoding: 'utf8' }))
   assert.equal(manifest.name, sourceManifest.name)
   assert.equal(manifest.version, sourceManifest.version)
   assert.equal(manifest.type, 'module')
@@ -64,7 +65,7 @@ try {
     }
   }
   checkExports(manifest.exports)
-  for (const required of ['lib/index.js', 'lib/client.js', 'lib/types/index.d.ts', 'lib/types/client/index.d.ts', 'cordis.patch.yml', 'README.md', 'LICENSE']) {
+  for (const required of ['lib/index.js', 'lib/client.js', 'lib/types/index.d.ts', 'lib/types/client/index.d.ts', 'totvs/package.json', 'totvs/index.js', 'totvs/client.js', 'totvs/index.d.ts', 'totvs/client.d.ts', 'totvs/icon.svg', 'totvs/locale/en.json', 'totvs/locale/pt.json', 'cordis.patch.yml', 'README.md', 'LICENSE']) {
     assert.ok(files.includes(`package/${required}`), `Missing packed file: ${required}`)
   }
 
@@ -110,7 +111,19 @@ try {
     assert.equal(typeof client.apply, 'function')
     assert.deepEqual(Array.from(client.inject), ['slots'])
     assert.ok(requested.includes('react'), 'Client must request installed shared React')
-    console.log('Packed host import and installed shared-module client factory passed')
+    const packageEntry = await installed(${JSON.stringify(manifest.name)})
+    const packageRoot = resolve(packageEntry, '../..')
+    const totvsPackage = resolve(packageRoot, 'totvs/package.json')
+    const totvsManifest = JSON.parse(await readFile(totvsPackage, 'utf8'))
+    const totvsHost = await import(pathToFileURL(resolve(totvsPackage, '../index.js')).href)
+    assert.equal(typeof totvsHost.apply, 'function')
+    const totvsCode = await readFile(resolve(totvsPackage, '../client.js'), 'utf8')
+    const totvsRegistrations = []
+    runInNewContext(totvsCode, { window: { __ModuleLoader__: { load: entry => totvsRegistrations.push(entry) } } })
+    assert.equal(totvsRegistrations.length, 1)
+    assert.equal(totvsRegistrations[0].id, totvsManifest.name)
+    assert.equal(typeof totvsRegistrations[0].factory(name => shared.get(name)).apply, 'function')
+    console.log('Packed host imports and installed shared-module client factories passed')
   `], { cwd: installDirectory, env: environment, stdio: 'inherit' })
   console.log(`Packed-install smoke passed: ${manifest.name}@${manifest.version}`)
 } finally {

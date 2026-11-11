@@ -1,6 +1,6 @@
 # @everywhere-harness/client-ui-chat
 
-Identidade visual Everywhere do chat e da sidebar, com marca, wordmark, hero animado e indicador de execucao. A versao `0.1.0` ainda nao esta publicada no npm nem listada no catalogo.
+Identidade visual Everywhere do chat e da sidebar, com marca, wordmark, hero animado e indicador de execucao. A versao `0.2.0` acrescenta o componente opcional `totvs`, instalado desativado por padrao.
 
 ## Runtime e ativacao progressiva
 
@@ -11,6 +11,10 @@ O entrypoint raiz e um plugin host sem contribuicoes visuais diretas. A declarac
 Marca e hero funcionam pelos slots existentes: `sidebar.brand.mark`, `sidebar.brand.name` e `conversation.hero.brand.mark`. O indicador requer `conversation.chat.running.icon`, e o titulo reativo requer `shell.document.title`. Os dois slots estao implementados na branch local `feat/client-ui-chat-extension-points` da origem, mas ainda nao estao publicados nos runtimes citados. A identidade completa depende de uma release do host com esses slots.
 
 As contribuicoes aguardam a declaracao de cada slot por `slots.inject`. Em hosts sem os novos slots, marca e hero continuam disponiveis; indicador e titulo nativos permanecem inalterados.
+
+## Componente opcional TOTVS
+
+A instalacao cria tambem o componente `totvs` desativado por padrao. O usuario pode ativa-lo na pagina de Components/Plugins quando quiser aplicar o tema. Ele oferece as mesmas cinco contribuicoes visuais do componente Everywhere, mas usa o simbolo TOTVS fornecido no chat e na sidebar, mostra particulas `+` no hover, preserva rotacao e batimento, e troca a marca para `TOTVS ENG V&D [CODE]`. Quando os dois componentes estao ativos, o TOTVS tem prioridade visual; desativa-lo restaura o Everywhere sem reinstalar o pacote.
 
 As contribuicoes usam os slots do host e podem disputar prioridade com outros plugins de marca. O titulo do documento e os estilos pertencem ao ciclo de vida deste plugin. A compatibilidade deve ser confirmada no host escolhido, nao inferida apenas do numero de versao.
 
@@ -53,11 +57,11 @@ O CI faz install frozen, typecheck, build, testes, validacao do indice e smoke o
 O descritor `cordis.patch.yml` ativa o plugin quando o pacote e instalado no perfil pelo gerenciador oficial. Depois de gerar o tarball, execute no terminal com o CLI `ewh` disponivel:
 
 ```sh
-ewh plugin --profile web add /caminho/everywhere-harness-client-ui-chat-0.1.0.tgz
+ewh plugin --profile web add /caminho/everywhere-harness-client-ui-chat-0.2.0.tgz
 ewh web --no-open
 ```
 
-O plugin aparece nos plugins instalados. Desativa-lo remove seus estilos, metadados e contribuicoes, restaurando os renderers nativos. Para remover o pacote do perfil, use `ewh plugin --profile web remove @everywhere-harness/client-ui-chat`. Nao adicione manualmente uma segunda entrada para o mesmo plugin.
+O pacote aparece nos plugins instalados com `everywhere-client-ui-chat` ativo e `totvs` desativado. Ative `totvs` para usar a identidade TOTVS; desativa-lo remove seus estilos, metadados e contribuicoes, restaurando a identidade Everywhere. Para remover o pacote do perfil, use `ewh plugin --profile web remove @everywhere-harness/client-ui-chat`. Nao adicione manualmente uma segunda entrada para o mesmo plugin.
 
 ## Catalogo e release futura
 
@@ -72,7 +76,7 @@ O `index.json` ativo permanece sem este pacote para nao apontar para npm 404. O 
   },
   "versions": [
     {
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": { "type": "npm" }
     }
   ]
@@ -81,7 +85,7 @@ O `index.json` ativo permanece sem este pacote para nao apontar para npm 404. O 
 
 Somente depois de a versao existir no npm deve-se completar os metadados e adicionar a entrada em `plugins` no indice ativo. Execute `pnpm run validate:index` para validar o formato local; esse validador faz verificacoes estruturais basicas e nao consulta o npm nem certifica compatibilidade de runtime.
 
-O workflow de publicacao permite apenas `@everywhere-harness/preset-protheus` e `@everywhere-harness/plugin-providers`. Nao adicione este pacote a essa lista sem a autorizacao de release. O script raiz `publish:packages` permanece recursivo e nao deve ser executado nesta branch.
+O workflow de publicacao inclui este pacote e publica automaticamente novas versoes no npm apos validacao na branch `main`. O script raiz `publish:packages` permanece recursivo e nao deve ser usado para uma release parcial.
 
 ## Origem e licenca
 

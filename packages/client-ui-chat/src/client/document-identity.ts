@@ -4,6 +4,13 @@ interface IdentityAdapters {
   onError?: (error: unknown) => void
 }
 
+export interface DocumentIdentityOptions {
+  pluginId?: string
+  applicationName?: string
+  shortName?: string
+  errorLabel?: string
+}
+
 function record(value: unknown): Record<string, unknown> {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     throw new TypeError('Expected a manifest object')
@@ -54,16 +61,27 @@ function rebaseManifest(manifest: Record<string, unknown>, base: string): void {
  * @param adapters - Optional browser adapters and observable failure reporting.
  * @returns Idempotent removal of only this instance's presentation and pending work.
  */
-export function installDocumentIdentity(target: Document, css: string, adapters: IdentityAdapters = {}): () => void {
+export function installDocumentIdentity(
+  target: Document,
+  css: string,
+  adapters: IdentityAdapters = {},
+  options: DocumentIdentityOptions = {},
+): () => void {
+  const {
+    pluginId = '@everywhere-harness/client-ui-chat',
+    applicationName = 'EveryWhere Harness',
+    shortName = 'EWH',
+    errorLabel = 'Everywhere application identity failed',
+  } = options
   const style = target.createElement('style')
-  style.dataset.plugin = '@everywhere-harness/client-ui-chat'
+  style.dataset.plugin = pluginId
   style.textContent = css
   target.head.append(style)
   const existingMeta = target.querySelector<HTMLMetaElement>('meta[name="apple-mobile-web-app-title"]')
   const meta = existingMeta ?? target.createElement('meta')
   const previousContent = meta.getAttribute('content')
   meta.name = 'apple-mobile-web-app-title'
-  meta.content = 'EWH'
+  meta.content = shortName
   if (!existingMeta) target.head.append(meta)
   const manifestLink = target.querySelector<HTMLLinkElement>('link[rel~="manifest"]')
   const previousHref = manifestLink?.getAttribute('href')
@@ -85,14 +103,14 @@ export function installDocumentIdentity(target: Document, css: string, adapters:
         const manifest = record(await response.json())
         if (!active || manifestLink.getAttribute('href') !== previousHref) return
         rebaseManifest(manifest, response.url || manifestUrl)
-        manifest.name = 'EveryWhere Harness'
-        manifest.short_name = 'EWH'
+        manifest.name = applicationName
+        manifest.short_name = shortName
         ownedUrl = urls.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }))
         manifestLink.href = ownedUrl
       } catch (error) {
         if (controller.signal.aborted) return
         if (adapters.onError) adapters.onError(error)
-        else console.error('Everywhere application identity failed', error)
+        else console.error(errorLabel, error)
       }
     })()
   }
@@ -101,7 +119,7 @@ export function installDocumentIdentity(target: Document, css: string, adapters:
     active = false
     controller.abort()
     style.remove()
-    if (meta.getAttribute('content') === 'EWH') {
+    if (meta.getAttribute('content') === shortName) {
       if (!existingMeta) meta.remove()
       else if (previousContent === null) meta.removeAttribute('content')
       else meta.setAttribute('content', previousContent)

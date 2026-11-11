@@ -21,3 +21,21 @@ test('browser artifact registers the package without activating the plugin', asy
   assert.equal(typeof exports.apply, 'function')
   assert.ok(requested.includes('react'), 'React must use the shared module table')
 })
+
+test('TOTVS browser artifact uses its subpath id and stays lazy until enabled', async () => {
+  const code = await readFile(new URL('../totvs/client.js', import.meta.url), 'utf8')
+  const registrations = []
+  runInNewContext(code, { window: { __ModuleLoader__: { load: entry => registrations.push(entry) } } })
+  assert.equal(registrations.length, 1)
+  assert.equal(registrations[0].id, '@everywhere-harness/client-ui-chat-totvs')
+  const exports = registrations[0].factory(name => {
+    assert.ok(['react', 'react/jsx-runtime'].includes(name), `Unexpected dependency: ${name}`)
+    return require(name)
+  })
+  assert.equal(typeof exports.apply, 'function')
+})
+
+test('bundle declares the TOTVS component disabled by default', async () => {
+  const patch = await readFile(new URL('../cordis.patch.yml', import.meta.url), 'utf8')
+  assert.match(patch, /id: totvs\s+name: '\.\/totvs\/index\.js'\s+disabled: true/)
+})
