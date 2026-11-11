@@ -35,7 +35,8 @@ test('TOTVS browser artifact uses its subpath id and stays lazy until enabled', 
   assert.equal(typeof exports.apply, 'function')
 })
 
-test('bundle declares the TOTVS component disabled by default', async () => {
+test('bundle declares the TOTVS package subpath disabled by default', async () => {
   const patch = await readFile(new URL('../cordis.patch.yml', import.meta.url), 'utf8')
-  assert.match(patch, /id: totvs\s+name: '\.\/totvs\/index\.js'\s+disabled: true/)
+  assert.match(patch, /id: totvs\s+name: '@everywhere-harness\/client-ui-chat\/totvs'\s+disabled: true/)
+  assert.doesNotMatch(patch, /(?:file:|\.\/totvs\/index\.js)/)
 })

@@ -59,7 +59,12 @@ try {
   function checkExports(value) {
     if (typeof value === 'string') {
       assert.ok(value.startsWith('./') && !value.split('/').includes('..'), `Invalid export: ${value}`)
-      assert.ok(files.includes(`package/${value.slice(2)}`), `Missing packed export: ${value}`)
+      if (value.includes('*')) {
+        const [prefix, suffix] = value.slice(2).split('*')
+        assert.ok(files.some(file => file.startsWith(`package/${prefix}`) && file.endsWith(suffix)), `Missing packed export pattern: ${value}`)
+      } else {
+        assert.ok(files.includes(`package/${value.slice(2)}`), `Missing packed export: ${value}`)
+      }
     } else {
       for (const entry of Object.values(value)) checkExports(entry)
     }
@@ -111,17 +116,15 @@ try {
     assert.equal(typeof client.apply, 'function')
     assert.deepEqual(Array.from(client.inject), ['slots'])
     assert.ok(requested.includes('react'), 'Client must request installed shared React')
-    const packageEntry = await installed(${JSON.stringify(manifest.name)})
-    const packageRoot = resolve(packageEntry, '../..')
-    const totvsPackage = resolve(packageRoot, 'totvs/package.json')
-    const totvsManifest = JSON.parse(await readFile(totvsPackage, 'utf8'))
-    const totvsHost = await import(pathToFileURL(resolve(totvsPackage, '../index.js')).href)
+    const totvsEntry = await installed(${JSON.stringify(`${manifest.name}/totvs`)})
+    assert.ok(totvsEntry.replaceAll('\\\\', '/').endsWith('/totvs/index.js'))
+    const totvsHost = await import(pathToFileURL(totvsEntry).href)
     assert.equal(typeof totvsHost.apply, 'function')
-    const totvsCode = await readFile(resolve(totvsPackage, '../client.js'), 'utf8')
+    const totvsCode = await readFile(await installed(${JSON.stringify(`${manifest.name}/totvs/client`)}), 'utf8')
     const totvsRegistrations = []
     runInNewContext(totvsCode, { window: { __ModuleLoader__: { load: entry => totvsRegistrations.push(entry) } } })
     assert.equal(totvsRegistrations.length, 1)
-    assert.equal(totvsRegistrations[0].id, totvsManifest.name)
+    assert.equal(totvsRegistrations[0].id, '@everywhere-harness/client-ui-chat-totvs')
     assert.equal(typeof totvsRegistrations[0].factory(name => shared.get(name)).apply, 'function')
     console.log('Packed host imports and installed shared-module client factories passed')
   `], { cwd: installDirectory, env: environment, stdio: 'inherit' })

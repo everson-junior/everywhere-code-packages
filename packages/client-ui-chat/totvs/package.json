@@ -1,6 +1,6 @@
 {
   "name": "@everywhere-harness/client-ui-chat-totvs",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Optional TOTVS ENG V&D CODE identity for the Everywhere Harness chat and sidebar",
   "type": "module",
   "exports": {

@@ -1,6 +1,6 @@
 # @everywhere-harness/client-ui-chat
 
-Identidade visual Everywhere do chat e da sidebar, com marca, wordmark, hero animado e indicador de execucao. A versao `0.2.0` acrescenta o componente opcional `totvs`, instalado desativado por padrao.
+Identidade visual Everywhere do chat e da sidebar, com marca, wordmark, hero animado e indicador de execucao. A versao `0.2.1` inclui o componente opcional `totvs`, instalado desativado por padrao, pelo subpath portavel `@everywhere-harness/client-ui-chat/totvs`.
 
 ## Runtime e ativacao progressiva
 
@@ -14,7 +14,7 @@ As contribuicoes aguardam a declaracao de cada slot por `slots.inject`. Em hosts
 
 ## Componente opcional TOTVS
 
-A instalacao cria tambem o componente `totvs` desativado por padrao. O usuario pode ativa-lo na pagina de Components/Plugins quando quiser aplicar o tema. Ele oferece as mesmas cinco contribuicoes visuais do componente Everywhere, mas usa o simbolo TOTVS fornecido no chat e na sidebar, mostra particulas `+` no hover, preserva rotacao e batimento, e troca a marca para `TOTVS ENG V&D [CODE]`. Quando os dois componentes estao ativos, o TOTVS tem prioridade visual; desativa-lo restaura o Everywhere sem reinstalar o pacote.
+A instalacao cria tambem o componente `totvs` desativado por padrao. A entrada usa um subpath exportado do pacote, nao um caminho absoluto `file://`; o Loader a resolve dentro da instalacao local do pacote em Windows, Linux e macOS. O usuario pode ativa-lo na pagina de Components/Plugins quando quiser aplicar o tema. Ele oferece as mesmas cinco contribuicoes visuais do componente Everywhere, mas usa o simbolo TOTVS fornecido no chat e na sidebar, mostra particulas `+` no hover, preserva rotacao e batimento, e troca a marca para `TOTVS ENG V&D [CODE]`. Quando os dois componentes estao ativos, o TOTVS tem prioridade visual; desativa-lo restaura o Everywhere sem reinstalar o pacote.
 
 As contribuicoes usam os slots do host e podem disputar prioridade com outros plugins de marca. O titulo do documento e os estilos pertencem ao ciclo de vida deste plugin. A compatibilidade deve ser confirmada no host escolhido, nao inferida apenas do numero de versao.
 
@@ -57,7 +57,7 @@ O CI faz install frozen, typecheck, build, testes, validacao do indice e smoke o
 O descritor `cordis.patch.yml` ativa o plugin quando o pacote e instalado no perfil pelo gerenciador oficial. Depois de gerar o tarball, execute no terminal com o CLI `ewh` disponivel:
 
 ```sh
-ewh plugin --profile web add /caminho/everywhere-harness-client-ui-chat-0.2.0.tgz
+ewh plugin --profile web add /caminho/everywhere-harness-client-ui-chat-0.2.1.tgz
 ewh web --no-open
 ```
 
@@ -76,7 +76,7 @@ O `index.json` ativo permanece sem este pacote para nao apontar para npm 404. O 
   },
   "versions": [
     {
-      "version": "0.2.0",
+      "version": "0.2.1",
       "source": { "type": "npm" }
     }
   ]
