@@ -82,6 +82,7 @@ jobs:
           for package in \
             @everywhere-harness/preset-protheus \
             @everywhere-harness/plugin-providers \
+            @everywhere-harness/client-ui-chat-totvs \
             @everywhere-harness/client-ui-chat \
             @everywhere-harness/ewh
           do

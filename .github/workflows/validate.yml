@@ -77,6 +77,7 @@ jobs:
       - name: Pack client UI chat without publishing
         run: |
           mkdir -p "$RUNNER_TEMP/client-ui-chat-pack"
+          pnpm --filter @everywhere-harness/client-ui-chat-totvs pack --pack-destination "$RUNNER_TEMP/client-ui-chat-pack"
           pnpm --filter @everywhere-harness/client-ui-chat pack --pack-destination "$RUNNER_TEMP/client-ui-chat-pack"
       - name: Pack ewh CLI without publishing
         run: |

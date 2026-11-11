@@ -1,6 +1,6 @@
 {
   "name": "@everywhere-harness/client-ui-chat",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Everywhere Harness visual identity for the chat and sidebar",
   "type": "module",
   "license": "MIT",
@@ -15,13 +15,9 @@
   "exports": {
     ".": { "types": "./lib/types/index.d.ts", "default": "./lib/index.js" },
     "./client": { "types": "./lib/types/client/index.d.ts", "default": "./lib/client.js" },
-    "./totvs": { "types": "./totvs/index.d.ts", "default": "./totvs/index.js" },
-    "./totvs/client": { "types": "./totvs/client.d.ts", "default": "./totvs/client.js" },
-    "./totvs/locale/*.json": "./totvs/locale/*.json",
-    "./totvs/icon": "./totvs/icon.svg",
     "./package.json": "./package.json"
   },
-  "files": ["lib", "totvs", "cordis.patch.yml", "README.md", "LICENSE"],
+  "files": ["lib", "cordis.patch.yml", "README.md", "LICENSE"],
   "dsh": {
     "bundle": { "patch": "./cordis.patch.yml" },
     "client": {
@@ -40,6 +36,7 @@
     "typecheck": "tsc --noEmit",
     "prepack": "pnpm run typecheck && pnpm run build && pnpm run test"
   },
+  "dependencies": { "@everywhere-harness/client-ui-chat-totvs": "0.2.2" },
   "peerDependencies": { "@deepseek-ai/cordis": "4.0.5" },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.5",

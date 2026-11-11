@@ -42,7 +42,7 @@ await build({
 await build({
   absWorkingDir: root,
   entryPoints: ['src/client/totvs-entry.ts'],
-  outfile: 'totvs/client.js',
+  outfile: '../client-ui-chat-totvs/client.js',
   bundle: true,
   format: 'cjs',
   platform: 'browser',
@@ -52,5 +52,5 @@ await build({
   external: ['react', 'react/jsx-runtime', '@deepseek-ai/cordis'],
   ...clientWrapper('@everywhere-harness/client-ui-chat-totvs'),
 })
-await copyFile(new URL('../lib/types/totvs.d.ts', import.meta.url), new URL('../totvs/index.d.ts', import.meta.url))
-await copyFile(new URL('../lib/types/client/totvs-entry.d.ts', import.meta.url), new URL('../totvs/client.d.ts', import.meta.url))
+await copyFile(new URL('../lib/types/totvs.d.ts', import.meta.url), new URL('../../client-ui-chat-totvs/index.d.ts', import.meta.url))
+await copyFile(new URL('../lib/types/client/totvs-entry.d.ts', import.meta.url), new URL('../../client-ui-chat-totvs/client.d.ts', import.meta.url))

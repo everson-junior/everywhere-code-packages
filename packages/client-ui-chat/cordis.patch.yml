@@ -2,5 +2,5 @@
     - id: everywhere-client-ui-chat
       name: '@everywhere-harness/client-ui-chat'
     - id: totvs
-      name: '@everywhere-harness/client-ui-chat/totvs'
+      name: '@everywhere-harness/client-ui-chat-totvs'
       disabled: true

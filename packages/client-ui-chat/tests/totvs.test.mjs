@@ -8,7 +8,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 const require = createRequire(import.meta.url)
-const code = await readFile(new URL('../totvs/client.js', import.meta.url), 'utf8')
+const code = await readFile(new URL('../../client-ui-chat-totvs/client.js', import.meta.url), 'utf8')
 
 function activate(document) {
   let factory

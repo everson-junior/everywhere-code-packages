@@ -1,0 +1,26 @@
+{
+  "name": "@everywhere-harness/client-ui-chat-totvs",
+  "version": "0.2.2",
+  "description": "Internal TOTVS client identity component for @everywhere-harness/client-ui-chat",
+  "type": "module",
+  "license": "MIT",
+  "publishConfig": { "access": "public" },
+  "files": ["index.js", "index.d.ts", "client.js", "client.d.ts", "locale", "icon.svg"],
+  "exports": {
+    ".": { "types": "./index.d.ts", "default": "./index.js" },
+    "./client": { "types": "./client.d.ts", "default": "./client.js" },
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-chat",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  }
+}
